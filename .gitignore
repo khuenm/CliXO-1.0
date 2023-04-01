@@ -1,3 +1,5 @@
 cmake-build-debug/*
 CMakeList.txt
 .idea/*
+tags
+build

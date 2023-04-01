@@ -1,21 +1,29 @@
-OBJS = clixo.o
-CC = g++
-CFLAGS11 = -Wall -O4 -c -std=c++11 -fomit-frame-pointer -funroll-loops -fforce-addr -fexpensive-optimizations -I .
-LFLAGS11 = -Wall -O4 -std=c++11 -fomit-frame-pointer -funroll-loops -fforce-addr -fexpensive-optimizations -I .
+CC = /usr/bin/g++
+CFLAGS17 = -Wall -O3 -c -std=c++17 -fomit-frame-pointer -funroll-loops -fforce-addr -I .
+LFLAGS17 = -Wall -O3 -std=c++17 -fomit-frame-pointer -funroll-loops -fforce-addr -I .
+# LIBS = -L$(LIB) -lstdc++fs -l:libboost_serialization.so.1.61.0 -l:libboost_system.so.1.61.0 -Wl,-rpath=$(LIB)
+# LIB = ${CURDIR}/boost/lib/
+BUILD_DIR = build
+OBJS = $(BUILD_DIR)/clixo.o
 
-all: clixo clustersToDAG
+all: checkdirs $(BUILD_DIR)/clixo $(BUILD_DIR)/clustersToDAG
 
-clixo: $(OBJS)
-	$(CC) $(LFLAGS11) clixo.o -o clixo
+checkdirs: $(BUILD_DIR)
 
-clixo.o: clixo.cpp util.h dag.h graph_undirected.h dagConstruct.h graph_undirected_bitset.h nodeDistanceObject.h
-	$(CC) $(CFLAGS11) clixo.cpp
+$(BUILD_DIR):
+	@mkdir -p $@
 
-clustersToDAG: clustersToDAG.o
-	$(CC) $(LFLAGS11) clustersToDAG.o -o clustersToDAG
+$(BUILD_DIR)/clixo: $(OBJS)
+	$(CC) $^ -o $@ $(LFLAGS17)
 
-clustersToDAG.o: clustersToDAG.cpp util.h dag.h graph_undirected.h dagConstruct.h graph_undirected_bitset.h nodeDistanceObject.h
-	$(CC) $(CFLAGS11) clustersToDAG.cpp
+$(BUILD_DIR)/clixo.o: clixo.cpp util.h dag.h graph_undirected.h dagConstruct.h graph_undirected_bitset.h nodeDistanceObject.h
+	$(CC) $< -o $@ $(CFLAGS17)
+
+$(BUILD_DIR)/clustersToDAG: $(BUILD_DIR)/clustersToDAG.o
+	$(CC) $^ -o $@ $(LFLAGS17)
+
+$(BUILD_DIR)/clustersToDAG.o: clustersToDAG.cpp util.h dag.h graph_undirected.h dagConstruct.h graph_undirected_bitset.h nodeDistanceObject.h
+	$(CC) $< -o $@ $(CFLAGS17)
 
 clean:
-	rm *.o
+	@rm -rf $(BUILD_DIR)
